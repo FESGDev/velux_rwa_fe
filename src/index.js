@@ -129,46 +129,27 @@ $(document).ready(function () {
     $('#vent-calc-tool').on('click', () => { 
     	renderCalc();
     });
-
+    $('#edit-defaults').on('click', () => { 
+    	$("#defaults-modal").modal({backdrop:'static', keyboard: true}); 
+    	renderEditDefaults();
+    	showGraph(1);
+    });
+    $('#defaults-modal input').on('change', () => {
+        hasChanged = true;
+        validateDefaults();
+    });
+    $('#devices-modal input').on('change', () => {
+        hasChanged = true;
+        validateDevices();
+    });
     $('#main input').on('change', () => {
         hasChanged = true;
         console.log(hasChanged);
         validateMain();
     });
     
-    $(document).on('change', '#drawing_scale', () => {
-    	let v = $('#drawing_scale').val();
-    	console.log('Changing drawing_scale to '+v);
-      $('#entrance_location_x').attr('placeholder', 'X ('+v+')');
-      $('#entrance_location_y').attr('placeholder', 'Y ('+v+')');
-      $('#shaft_location_x').attr('placeholder', 'X ('+v+')');
-      $('#shaft_location_y').attr('placeholder', 'Y ('+v+')');
-    });
-    $(document).on('change', '#box-mean', () => { 
-    	let mean = parseInt($('#box-mean').val());
-    	let std = parseInt($('#box-std').val());
-    	boards[0].setBoundingBox([ 0, 0.3, mean + std*5,-0.1]);
-    	boards[0].update();
-    });
-    $(document).on('change', '#box-std', () => { 
-    	let mean = parseInt($('#box-mean').val());
-    	let std = parseInt($('#box-std').val());
-    	boards[0].setBoundingBox([ 0,0.3, mean + std*5,-0.1]);
-    	boards[0].update();
-    });
 
-    $(document).on('change', '#box2-mean', () => { 
-    	let mean = parseInt($('#box2-mean').val());
-    	let std = parseInt($('#box2-std').val());
-    	boards[1].setBoundingBox([ 0, 0.3, mean + std*5,-0.1]);
-    	boards[1].update();
-    });
-    $(document).on('change', '#box2-std', () => { 
-    	let mean = parseInt($('#box2-mean').val());
-    	let std = parseInt($('#box2-std').val());
-    	boards[1].setBoundingBox([ mean - std*5,0.3, mean + std*5,-0.1]);
-    	boards[1].update();
-    });
+
 
     $(document).on('change', '#number_layersug', () => {
          updateNumberLayersUG();
@@ -206,55 +187,7 @@ $(document).ready(function () {
         }
     }
 
-    $(document).on('change', '#provincie_lijst', () => {
-        updateBrandweerZoneLijst();
-   });
 
-    function updateBrandweerZoneLijst() {
-        let provincie = $('#provincie_lijst').val();
-        //console.log(provincie);
-        let brandweerzone=$("#brandweerzone");
-        let values=[];
-        switch(provincie) {
-            case 'antwerpen':
-                values=['Zone Antwerpen', 'Zone Rivierenland', 'Zone Rand', 'Zone Taxandria', 'Zone Kempen'];
-                break;
-            case 'limburg':
-                values=['Zone Noord-Limburg', 'Zone Oost-Limburg', 'Zone Zuid-West Limburg'];
-                break;
-            case 'vlaamsbrabant':
-                values=['Brussel - DBDMH','Zone Oost Vlaams-Brabant', 'Zone Vlaams-Brabant West'];
-                break;
-            case 'oostvlaanderen':
-                values=['Zone Centrum', 'Zone Meetjesland', 'Zone Oost', 'Zone Vlaamse Ardennen', 'Zone Waasland', 'Zone Zuid-Oost'];
-                break
-            case 'westvlaanderen':
-                values=['Zone 1', 'Zone Fluvia' ,'Zone Midwest', 'Zone Westhoek', 'Zone Westkust'];
-                break
-            case 'henegouwen':
-                values=['Zone Henegouwen-Centrum', 'Zone Henegouwen-Oost'];
-                break;
-            case 'luik':
-                values=['Luik Zone 2', 'Zone HEMCO', 'Zone Vesdre', 'Zone 5 Warche', 'Zone DG'];
-                break;
-            case 'luxemburg':
-                values=['Zone Luxemburg'];
-                break;
-            case 'namen':
-                values=['Zone DINAPHI', 'Zone NAGE', 'Zone Val de Sambre'];
-                break;
-            case 'waalsbrabant':
-                values=['Zone Waals-Brabant'];
-                break;
-            default:
-                values=['-'];
-        }
-        brandweerzone.empty();
-        values=values.sort()
-        $.each(values, function(index, value) {
-            brandweerzone.append("<option>" + value + "</option>");
-        });
-    }
 
     $(document).on('change', '#buildingType', () => {
         console.log("buildingsAboveParking clicked");
