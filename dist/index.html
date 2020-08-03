@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FESG wep app</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/jsxgraph.css" />
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+    <style>
+        #box_licenseText { display: none; }
+        #box_navigationbar { display: none; }
+        #box2_licenseText { display: none; }
+        #box2_navigationbar { display: none; }
+
+        /*body { background-color: #7386D5 }*/
+
+        .wrapper {
+            max-width: 1450px;
+            /*margin: 0 auto;*/
+        }
+        /*#content { background-color: #fff; }*/
+        .help-tip {
+            background-color: #BCDBEA;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: 600;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 26px;
+            border: none;
+            display: inline-block;
+            margin-left:10px;
+        }
+        .help-tip:focus {
+            outline: none;
+        }
+        .freq-margin-fix {
+            margin-left:10px;
+        }
+        .jxgbox {
+            border-radius: 0.25rem;
+            webkit-border-radius: 0.25rem;
+            border-color: #000;
+        }
+        .margin-right-auto {
+            margin-right: auto !important;
+        }
+        .main-small {
+            display:none;
+        }
+        @media (max-width: 1000px) {
+            .main-small {
+                display: block;
+            }
+            #main { display:none; }
+        }
+        @media (min-width: 576px) {
+            .form-inline .form-control {
+                display: inline-block;
+                width: 100%;
+            }
+            .form-inline label {
+                justify-content: left;
+            }
+            .col-md-p12 {
+                padding: 0 15px;
+                max-width: 20.5%;
+            }
+            .col-md-p13 {
+                padding: 0 5px;
+                max-width: 12.5%;
+            }
+            .modal-dialog {
+                max-width: 1550px;
+            }
+            #modal-dialog-devices {
+                max-width: 978px;
+            }
+            #modal-dialog-files, #modal-dialog-results {
+                max-width: 500px;
+            }
+
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Velux RWA</h3>
+            </div>
+            <ul class="list-unstyled components">
+                <p>Options</p>
+                <li><a id="results" href="#">Results</a></li>
+                <li><a id="help" href="#">Help</a></li>
+            </ul>
+            <ul class="list-unstyled CTAs">
+                <li><a href="#" class="download">Save</a></li>
+                <li><a href="#" class="article">Open</a></li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content" class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <span style="padding-left:10px;">Velux RWA calculation</span>
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a id="introduction" class="nav-link" href="#">Introduction</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a id="vent-calc-tool" class="nav-link" href="#">Ventilation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a id="login" class="nav-link" href="#">Login</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div id="intro-div"></div>
+            <div class="main-small">This app currently only works for devices where width > 1000 px.</div>
+            <div id="main">
+                <form class="form-horizontal" id="calc-form">
+                    <!-- <input type="hidden" name="_token" value="{{ csrf_token }}"> -->
+                    <!-- TODO: Fix django token -->
+                    <h2>Inputs</h2>
+
+                    <div class="input-group form-inline mt-2">
+                        <label class="control-label col-md-3">Project Name
+                            <div class="help-tip" tabindex="0" role="button" href="javascript:void(0);" data-trigger="hover focus" data-toggle="popover" data-placement="top" data-content="Enter a project name in the box">?</div>    
+                        </label>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="pname" name="pname" placeholder="project name (e.g., django)">                                
+                        </div>
+                    </div>
+
+
+                    <div id="gebouwenBovenParking" class="input-group form-inline mt-2">
+                        <label class="control-label col-md-3">Building Type</label>
+                        <div class="col-md-3">
+                            <select class="form-control" id="buildingType" name="buildingsAboveParking">
+                                <option value="typeRegular" selected="">Regular</option>
+                                <option value="typeIndustry">Industry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="typeGebouw" style="display:none" class="input-group form-inline mt-2">
+                        <label class="control-label col-md-3">Classification
+                            <div class="help-tip" tabindex="0" role="button" href="javascript:void(0);" data-trigger="hover focus" data-toggle="popover" data-placement="top" data-content="Choose from 3 choices based on the inflammability of the material kept in the building.">?</div>    
+                        </label>
+                        <div class="col-md-3">
+                            <select class="form-control" id="buildingClass" name="buildingClass">
+                                <option value="laag">A   (Difficult to burn)</option>
+                                <option value="mid">B   (Burns moderately)</option>
+                                <option value="hoog">C   (Burns easily)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="bldLayers" class="input-group form-inline mt-2">
+                        <label class="control-label col-md-3">One layer building ?
+                        <div class="help-tip" tabindex="0" role="button" href="javascript:void(0);" data-trigger="hover focus" data-toggle="popover" data-placement="top" data-content="Only if the building has no mezzanine, choose yes. Else choose no.">?</div> 
+                        </label>
+                        <div class="col-md-3">
+                            <select class="form-control" id="nrLayers" name="nrLayers">
+                                <option value="mezzanineLayered" selected="">No</option>
+                                <option value="singleLayered">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group form-inline mt-2">
+                        <label class="control-label col-md-3"># Smoke compartments</label>
+                        <div class="col-md-3">
+                            <select class="form-control" id="number_layersug" name="number_layersug">
+                                <option value="0" selected="">-- Choose One --</option>                                 
+                                <option value="1" >1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h2 class="input-group form-inline mt-2" id="scomp1" style="visibility:hidden;">
+                        <label id="labelug1" class="control-label col-md-3">Smoke compartment 1</label>
+                        <div id="ug1" class="col-md-3">
+                            <input type="text" class="form-control" id='og1' name="og1" placeholder="oppervlakte [m^2]">
+                        </div>
+
+                    </h2>
+
+                    <h2 class="input-group form-inline mt-2" id="scomp2" style="visibility:hidden;">
+                        <label id="labelug2" class="control-label col-md-3">Smoke compartment 2</label>
+                        <div id="ug2" class="col-md-3">
+                            <input type="text" class="form-control" id='og2' name="og2" placeholder="oppervlakte [m^2]">
+                        </div>
+
+                    </h2>
+
+                    <h2 class="input-group form-inline mt-2" id="scomp3" style="visibility:hidden;">
+                        <label id="labelug3" class="control-label col-md-3">Smoke compartment 3</label>
+                        <div id="ug3" class="col-md-3">
+                            <input type="text" class="form-control" id="og3" name="og3" placeholder="oppervlakte [m^2]">
+                        </div>
+
+                    </h2>
+
+
+
+
+                    <h2 class="mt-5">Options</h2>
+
+                    <div class="text-center mt-5">
+                        <button id="submit" type="submit" class="btn btn-primary">Show options</button>
+<button id="submit" type="submit" class="btn btn-primary">Show options</button>
+                    </div>
+
+
+
+
+                    <div id="submit-success" class="alert alert-success mt-3" style="display:none;">Thank you. Your inputs have been submitted. Results will be sent to you by e-mail.</div>
+                </form>
+            </div>  
+        </div>
+    </div>
+
+    <script  src="main.js"></script>
+    
+    <script type="text/javascript" src="jsxgraphcore.js"></script>
+</body>
+
+</html>
